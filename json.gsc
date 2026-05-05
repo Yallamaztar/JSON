@@ -25,26 +25,26 @@
  * init() {
  *   // player object
  *   player = json_object();
- *   player = json_add(player, "name", "Ghost");
- *   player = json_add(player, "rank", 55);
+ *   player = object_add(player, "name", "Ghost");
+ *   player = object_add(player, "rank", 55);
  *
  *   // weapons array
  *   weapons = json_array();
- *   weapons = json_array_add(weapons, "ak47");
- *   weapons = json_array_add(weapons, "mp7");
- *   weapons = json_array_end(weapons);
+ *   weapons = array_add(weapons, "ak47");
+ *   weapons = array_add(weapons, "mp7");
+ *   weapons = array_end(weapons);
  *
  *   // stats object (nested)
  *   stats = json_object();
- *   stats = json_add(stats, "kills", 120);
- *   stats = json_add(stats, "deaths", 30);
- *   stats = json_object_end(stats);
+ *   stats = object_add(stats, "kills", 120);
+ *   stats = object_add(stats, "deaths", 30);
+ *   stats = object_end(stats);
  *
  *   // attach nested structures
- *   player = json_add(player, "weapons", weapons);
- *   player = json_add(player, "stats", stats);
+ *   player = object_add(player, "weapons", weapons);
+ *   player = object_add(player, "stats", stats);
  *
- *   final = json_object_end(player);
+ *   final = object_end(player);
  *   println(final); // prints: {"name":"Ghost","rank":55,"weapons":["ak47","mp7"],"stats":{"kills":120,"deaths":30}}
  * }
  * ```
