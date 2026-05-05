@@ -22,6 +22,8 @@
  * =========================================================
  * Example of building a JSON object:
  * ```
+ * #include scripts\json;
+ *
  * init() {
  *   // player object
  *   player = json_object();
@@ -45,7 +47,7 @@
  *   player = object_add(player, "stats", stats);
  *
  *   final = object_to_string(player);
- *   println(final); // prints: {"name":"Ghost","rank":55,"weapons":["ak47","mp7"],"stats":{"kills":120,"deaths":30}}
+ *   scripts\strings::printf("%j\n", final); // prints: {"name":"Ghost","rank":55,"weapons":["ak47","mp7"],"stats":{"kills":120,"deaths":30}}
  * }
  * ```
  * =========================================================
