@@ -19,6 +19,10 @@
  *
  *   Make sure to include/import the strings library
  *   before using this JSON module.
+ *
+ *   vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+ *   Also set the `scr_allowFileIo` dvar to `1` for file IO functions
+ *   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
  * =========================================================
  * Example of building a JSON object:
  * ```
@@ -34,19 +38,19 @@
  *   weapons = json_array();
  *   weapons = array_add(weapons, "ak47");
  *   weapons = array_add(weapons, "mp7");
- *   weapons = array_to_string(weapons);
+ *   weapons = array_jsonify(weapons);
  *
  *   // stats object (nested)
  *   stats = json_object();
  *   stats = object_add(stats, "kills", 120);
  *   stats = object_add(stats, "deaths", 30);
- *   stats = object_to_string(stats);
+ *   stats = object_jsonify(stats);
  *
  *   // attach nested structures
  *   player = object_add(player, "weapons", weapons);
  *   player = object_add(player, "stats", stats);
  *
- *   final = object_to_string(player);
+ *   final = object_jsonify(player);
  *   scripts\strings::printf("%j\n", final); // prints: {"name":"Ghost","rank":55,"weapons":["ak47","mp7"],"stats":{"kills":120,"deaths":30}}
  * }
  * ```
@@ -92,7 +96,7 @@ object_add(obj, key, value) {
 }
 
 /* 
- * object_to_string(obj) Finalizes a JSON object
+ * object_jsonify(obj) Finalizes a JSON object
  *
  * Params:
  *   obj - The JSON object to finalize
@@ -102,10 +106,10 @@ object_add(obj, key, value) {
  *
  * Example Usage:
  * ```
- * obj = object_to_string(obj);
+ * obj = object_jsonify(obj);
  * ```
  */
-object_to_string(obj) {
+object_jsonify(obj) {
     return "{" + join(obj, ",") + "}";
 }
 
@@ -145,7 +149,7 @@ array_add(arr, value) {
 }
 
 /* 
- * array_to_string(arr) Finalizes a JSON array
+ * array_jsonify(arr) Finalizes a JSON array
  *
  * Params:
  *   arr - The JSON array to finalize
@@ -155,10 +159,10 @@ array_add(arr, value) {
  *
  * Example Usage:
  * ```
- * arr = array_to_string(arr);
+ * arr = array_jsonify(arr);
  * ```
  */
-array_to_string(arr) {
+array_jsonify(arr) {
     return "[" + join(arr, ",") + "]";
 }
 
