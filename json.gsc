@@ -1,0 +1,114 @@
+/*
+ * GSC JSON library made for Plutonium t6 (Black Ops II)
+ * Still a work in progress, will be adding file parsing etc.. 
+ *
+ * So far has support for creating JSON objects and arrays, 
+ * adding key-value pairs, and converting values to their 
+ * JSON string representations.
+ *
+ * Dependencies:
+ *   Requires the strings utility library:
+ *   https://github.com/Yallamaztar/strings
+ *
+ *   This library relies on the following functions:
+ *     - sprintf()
+ *     - replace()
+ *     - join()
+ *     - starts_with()
+ *     - IsBoolean()
+ *
+ *   Make sure to include/import the strings library
+ *   before using this JSON module.
+ 
+ * Example of building a JSON object:
+ * ```
+ * init() {
+ *   // player object
+ *   player = json_object();
+ *   player = json_add(player, "name", "Ghost");
+ *   player = json_add(player, "rank", 55);
+ *
+ *   // weapons array
+ *   weapons = json_array();
+ *   weapons = json_array_add(weapons, "ak47");
+ *   weapons = json_array_add(weapons, "mp7");
+ *   weapons = json_array_end(weapons);
+ *
+ *   // stats object (nested)
+ *   stats = json_object();
+ *   stats = json_add(stats, "kills", 120);
+ *   stats = json_add(stats, "deaths", 30);
+ *   stats = json_object_end(stats);
+ *
+ *   // attach nested structures
+ *   player = json_add(player, "weapons", weapons);
+ *   player = json_add(player, "stats", stats);
+ *
+ *   final = json_object_end(player);
+ *   println(final); // prints: {"name":"Ghost","rank":55,"weapons":["ak47","mp7"],"stats":{"kills":120,"deaths":30}}
+ * }
+ * ```
+ */
+
+#include scripts\strings;
+
+// json_object() Returns a new JSON object
+json_object() {
+    return [];
+}
+
+// object_add(obj, key, value) Adds a key-value pair to a JSON object
+object_add(obj, key, value) {
+    obj[obj.size] = json_kv(key, value);
+    return obj;
+}
+
+// object_end(obj) Finalizes a JSON object
+object_end(obj) {
+    return "{" + join(obj, ",") + "}";
+}
+
+// json_array() Returns a new JSON array
+json_array() {
+    return [];
+}
+
+// array_add(arr, value) Adds a value to a JSON array
+array_add(arr, value) {
+    arr[arr.size] = json_value(value);
+    return arr;
+}
+
+// array_end(arr) Finalizes a JSON array
+array_end(arr) {
+    return "[" + join(arr, ",") + "]";
+}
+
+// json_kv(key, value) Creates a key-value pair for a JSON object
+json_kv(key, value) {
+    return sprintf("\"%s\":%s", key, json_value(value));
+}
+
+// json_value(value) Converts a value to its JSON string representation
+json_value(value) {
+    if (!isdefined(value)) {
+        return "null";
+    }
+
+    if (isString(value) && (starts_with(value, "{") || starts_with(value, "["))) {
+        return value;
+    }
+
+    if (IsString(value)) {
+        value = replace(value, "\\", "\\\\");
+        value = replace(value, "\"", "\\\"");
+        return "\"" + value + "\"";
+    }
+
+    if (IsBoolean(value)) {
+        return sprintf("%t", value);
+    }
+
+    return value + "";
+}
+
