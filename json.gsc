@@ -113,9 +113,30 @@
  * }
  * ```
  */
-
+ 
 #include scripts\strings;
+
 #define null undefined
+
+/* Object API macros */
+#define json_obj() json_object()
+#define obj_add(obj, key, value) object_add(obj, key, value)
+#define obj_remove(obj, key) object_remove(obj, key)
+#define obj_get(obj, key) object_get(obj, key)
+#define obj_has(obj, key) object_has(obj, key)
+#define obj_clear(obj) object_clear(obj)
+#define obj_keys(obj) object_keys(obj)
+#define obj_jsonify(obj) object_jsonify(obj)
+
+/* Array API macros */
+#define json_arr() json_array()
+#define array_push(arr, value) array_add(arr, value)
+#define arr_add(arr, value) array_add(arr, value)
+#define arr_remove(arr, value) array_remove(arr, value)
+#define arr_has(arr, value) array_has(arr, value)
+#define arr_clear(arr) array_clear(arr)
+#define arr_pop(arr) array_pop(arr)
+#define arr_jsonify(arr) array_jsonify(arr)
 
 /* 
  * json_object() Returns a new JSON object
@@ -613,7 +634,7 @@ stringify(parser) {
     if (!isdefined(parser) || parser.string == "") {
         return null;
     }
-    
+
     skip_whitespaces(parser);
 
     char = get_current_char(parser);
