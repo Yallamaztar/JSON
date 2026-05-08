@@ -7,10 +7,13 @@ A Lightweight JSON Library for [**Plutonium T6 (Black Ops II)**](https://plutoni
 ## Features:
 
 - Create and manipulate JSON objects and arrays
+- Lightweight key-value storage system built for GSC constraints
+- Full support for nested data structures (objects within arrays and vice versa)
+- Optional file I/O support for persistent data storage
 - Serialize GSC data structures into valid JSON strings
-- Parse JSON strings back into usable GSC arrays
-- Lightweight and dependency-minimal design
-
+- Parse JSON strings back into usable GSC arrays and objects
+- Object utilities: ``add, get, remove, check existence, clear, and key enumeration``
+- Array utilities: ``push, pop, remove, search, clear, and stringify``
 ---
 
 ## Dependencies
