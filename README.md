@@ -61,7 +61,7 @@ init() {
     printlnf("^2Generated JSON:^7 %s", json);
     // {"name":"Alex","age":22,"admin":false,"scores":[10,25,99]}
 
-    // Parse JSON string back into GSC data
+    // Parse JSON string back into a GSC array
     parser = new_parser(json);
     parsed = stringify(parser);
 
