@@ -82,7 +82,7 @@ init() {
     data = read("players.json");
 
     printlnf("[players.json] name: %s", data["name"]);
-    printlnf("[players.json] age: %d", parsed["age"]);
+    printlnf("[players.json] age: %d", data["age"]);
     printlnf("[players.json] is admin: %t", data["admin"]);
     printlnf("[players.json] scores: %a", data[scores]);
 }
