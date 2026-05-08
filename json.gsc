@@ -6,7 +6,7 @@
  * easy creation, parsing, and serialization of JSON objects and arrays
  * ==================================================================
  * Copyright (c) 2026 Budiworld 🍌
- * This script is part of a custom string utility library.
+ * This script is part of a custom JSON library.
  *
  * Permission is granted to use, modify, and include this
  * code in both personal and public projects, provided that
@@ -40,12 +40,19 @@
  *   - json_object()
  *   - object_add(obj, key, value)
  *   - object_remove(obj, key)
+ *   - object_get(obj, key)
+ *   - object_has(obj, key)
+ *   - object_clear(obj)
+ *   - object_keys(obj)
  *   - object_jsonify(obj)
  *
  * Array API:
  *   - json_array()
  *   - array_add(arr, value)
  *   - array_remove(arr, value)
+ *   - array_has(arr, value)
+ *   - array_clear(arr)
+ *   - array_pop(arr)
  *   - array_jsonify(arr)
  *
  * Parser API:
@@ -172,6 +179,95 @@ object_remove(obj, key) {
 }
 
 /*
+ * object_get(obj, key) Gets the value associated with a key in a JSON object
+ *
+ * Params:
+ *   obj - The JSON object to search
+ *   key - The key to look for
+ *
+ * Returns:
+ *   The value associated with the key, or null if not found
+ *
+ * Example Usage:
+ * ```
+ * value = object_get(obj, "key");
+ * ```
+ */
+object_get(obj, key) {
+    for (i = 0; i < len(obj); i++) {
+        if (obj[i]["key"] == key) {
+            return obj[i]["value"];
+        }
+    }
+    return null;
+}
+
+/*
+ * object_has(obj, key) Checks if a key exists in a JSON object
+ *
+ * Params:
+ *   obj - The JSON object to search
+ *   key - The key to look for
+ *
+ * Returns:
+ *   true if the key exists, false otherwise
+ *
+ * Example Usage:
+ * ```
+ * hasKey = object_has(obj, "key");
+ * ```
+ */
+object_has(obj, key) {
+    for (i = 0; i < len(obj); i++) {
+        if (obj[i]["key"] == key) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ * object_clear(obj) Clears a JSON object
+ *
+ * Params:
+ *   obj - The JSON object to clear
+ *
+ * Returns:
+ *   An empty JSON object
+ *
+ * Example Usage:
+ * ```
+ * obj = object_clear(obj);
+ * ```
+ */
+object_clear(obj) {
+    obj = json_object();
+    return obj;
+}
+
+/*
+ * object_keys(obj) Returns a json array of all keys
+ *
+ * Params:
+ *   obj - The JSON object to get keys from
+ *
+ * Returns:
+ *   A json array of all keys in the object
+ *
+ * Example Usage:
+ * ```
+ * keys = object_keys(obj);
+ * ```
+ */
+object_keys(obj) {
+    keys = json_array();
+    for (i = 0; i < len(obj); i++) {
+        keys = array_add(keys, obj[i]["key"]);
+    }
+    return keys;
+}
+
+/*
  * object_jsonify(obj) Converts a JSON object to its string representation
  *
  * Params:
@@ -256,6 +352,71 @@ array_remove(arr, value) {
         if (arr[i] != value) {
             new = array_add(new, arr[i]);
         }
+    }
+    return new;
+}
+
+/*
+ * array_has(arr, value) Checks if a value exists in a JSON array
+ *
+ * Params:
+ *   arr   - The JSON array to search
+ *   value - The value to look for
+ *
+ * Returns:
+ *   true if the value exists, false otherwise
+ *
+ * Example Usage:
+ * ```
+ * hasValue = array_has(arr, "value");
+ * ```
+ */
+array_has(arr, value) {
+    for (i = 0; i < len(arr); i++) {
+        if (arr[i] == value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ * array_clear(arr) Clears a JSON array
+ *
+ * Params:
+ *   arr - The JSON array to clear
+ *
+ * Returns:
+ *   An empty JSON array
+ *
+ * Example Usage:
+ * ```
+ * arr = array_clear(arr);
+ * ```
+ */
+array_clear(arr) {
+    arr = json_array();
+    return arr;
+}
+
+/*
+ * array_pop(arr) Removes the last element from a JSON array
+ *
+ * Params:
+ *   arr - The JSON array to pop from
+ *
+ * Returns:
+ *   The popped value or null if the array is empty
+ *
+ * Example Usage:
+ * ```
+ * arr = array_pop(arr);
+ * ```
+ */
+array_pop(arr) {
+    new = json_array();
+    for (i = 0; i < len(arr) - 1; i++) {
+        new[i] = arr[i];
     }
     return new;
 }
