@@ -149,6 +149,10 @@ json_object() {
  * ```
  */
 object_add(obj, key, value) {
+    if (!isdefined(obj) || !isdefined(key) || !isdefined(value)) {
+        return null;
+    }
+
     obj[obj.size] = json_kv(key, value);
     return obj;
 }
@@ -169,6 +173,10 @@ object_add(obj, key, value) {
  * ```
  */
 object_remove(obj, key) {
+    if (!isdefined(obj) || !isdefined(key)) {
+        return null;
+    }
+
     new = json_object();
     for (i = 0; i < len(obj); i++) {
         if (obj[i]["key"] != key) {
@@ -194,6 +202,10 @@ object_remove(obj, key) {
  * ```
  */
 object_get(obj, key) {
+    if (!isdefined(obj) || !isdefined(key)) {
+        return null;
+    }
+
     for (i = 0; i < len(obj); i++) {
         if (obj[i]["key"] == key) {
             return obj[i]["value"];
@@ -218,6 +230,10 @@ object_get(obj, key) {
  * ```
  */
 object_has(obj, key) {
+    if (!isdefined(obj) || !isdefined(key)) {
+        return false;
+    }
+
     for (i = 0; i < len(obj); i++) {
         if (obj[i]["key"] == key) {
             return true;
@@ -260,6 +276,10 @@ object_clear(obj) {
  * ```
  */
 object_keys(obj) {
+    if (!isdefined(obj)) {
+        return null;
+    }
+
     keys = json_array();
     for (i = 0; i < len(obj); i++) {
         keys = array_add(keys, obj[i]["key"]);
@@ -282,6 +302,10 @@ object_keys(obj) {
  * ```
  */
 object_jsonify(obj) {
+    if (!isdefined(obj) || len(obj) == 0) {
+        return null;
+    }
+
     json = "{";
     for (i = 0; i < len(obj); i++) {
         kv = obj[i];
@@ -327,6 +351,10 @@ json_array() {
  * ```
  */
 array_add(arr, value) {
+    if (!isdefined(arr) || !isdefined(value)) {
+        return null;
+    }
+
     arr[arr.size] = json_stringify_value(value);
     return arr;
 }
@@ -347,6 +375,10 @@ array_add(arr, value) {
  * ```
  */
 array_remove(arr, value) {
+    if (!isdefined(arr) || !isdefined(value)) {
+        return null;
+    }
+
     new = json_array();
     for (i = 0; i < len(arr); i++) {
         if (arr[i] != value) {
@@ -372,6 +404,10 @@ array_remove(arr, value) {
  * ```
  */
 array_has(arr, value) {
+    if (!isdefined(arr) || !isdefined(value)) {
+        return false;
+    }
+
     for (i = 0; i < len(arr); i++) {
         if (arr[i] == value) {
             return true;
@@ -414,6 +450,10 @@ array_clear(arr) {
  * ```
  */
 array_pop(arr) {
+    if (!isdefined(arr) || len(arr) == 0) {
+        return null;
+    }
+
     new = json_array();
     for (i = 0; i < len(arr) - 1; i++) {
         new[i] = arr[i];
@@ -436,6 +476,10 @@ array_pop(arr) {
  * ```
  */
 array_jsonify(arr) {
+    if (!isdefined(arr) || len(arr) == 0) {
+        return null;
+    }
+
     json = "[";
     for (i = 0; i < arr.size; i++) {
         json += json_stringify_value(arr[i]);
@@ -462,6 +506,10 @@ array_jsonify(arr) {
  * ```
  */
 json_stringify_value(v) {
+    if (!isdefined(v)) {
+        return "null";
+    }
+
     if (IsString(v)) {
         return "\"" + v + "\"";
     }
@@ -508,6 +556,10 @@ json_stringify_value(v) {
 
 // json_kv(key, value) Returns a new key-value pair for a JSON object
 json_kv(key, value) {
+    if (!isdefined(key) || !isdefined(value)) {
+        return null;
+    }
+
     kv = [];
     kv["key"] = key;
     kv["value"] = value;
@@ -530,6 +582,11 @@ json_kv(key, value) {
  * ```
  */
 new_parser(s) {
+    if (!isdefined(s)) {
+        println("Invalid JSON string");
+        return null;
+    }
+
     p = SpawnStruct();
     p.index  = 0;
     p.string = s;
@@ -553,6 +610,10 @@ new_parser(s) {
  * ```
  */
 stringify(parser) {
+    if (!isdefined(parser) || parser.string == "") {
+        return null;
+    }
+    
     skip_whitespaces(parser);
 
     char = get_current_char(parser);
