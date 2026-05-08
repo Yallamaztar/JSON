@@ -70,6 +70,21 @@ init() {
     printlnf("^3Parsed age:^7 %d", parsed["age"]);       // 22
     printlnf("^3Parsed admin:^7 %t", parsed["admin"]);   // 0 booleans are represented by 0 (false) 1 (true)
     printlnf("^3Parsed scores:^7 %a", parsed["scores"]); // [10,25,99]
+
+    /* NEW file I/O functions */
+    // required for using file I/O functions
+    allow_fileIO(); 
+
+    // write JSON object to file
+    write("players.json", player);
+
+    // read JSON object back from file (auto parsed)
+    data = read("players.json");
+
+    printlnf("[players.json] name: %s", data["name"]);
+    printlnf("[players.json] age: %d", parsed["age"]);
+    printlnf("[players.json] is admin: %t", data["admin"]);
+    printlnf("[players.json] scores: %a", data[scores]);
 }
 ```
 
