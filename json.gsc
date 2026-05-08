@@ -1,63 +1,114 @@
 /*
+ * ==================================================================
  * GSC JSON library made for Plutonium t6 (Black Ops II)
- * Still a work in progress, will be adding file parsing etc.. 
- * =========================================================
- * So far has support for creating JSON objects and arrays, 
- * adding key-value pairs, and converting values to their 
- * JSON string representations.
- * =========================================================
+ * 
+ * A lightweight JSON library for Plutonium T6 (BO2) GSC, enabling 
+ * easy creation, parsing, and serialization of JSON objects and arrays
+ * ==================================================================
+ * Copyright (c) 2026 Budiworld 🍌
+ * This script is part of a custom string utility library.
+ *
+ * Permission is granted to use, modify, and include this
+ * code in both personal and public projects, provided that
+ * the original copyright notice and this permission notice
+ * remain intact in all copies or substantial portions of the
+ * software.
+ *
+ * You are NOT required to open-source your entire project,
+ * but you MUST retain this notice if this script is used.
+ *
+ * This software is provided "as is", without warranty of any
+ * kind, express or implied.
+ * ==================================================================
  * Dependencies:
  *   Requires the strings utility library:
  *   https://github.com/Yallamaztar/strings
  *
  *   This library relies on the following functions:
  *     - sprintf()
- *     - replace()
- *     - join()
- *     - starts_with()
  *     - IsBoolean()
+ *     - strlen()
+ *     - len()
+ *     - substr()
  *
- *   Make sure to include/import the strings library
- *   before using this JSON module.
+ *   Make sure to include the strings library
+ *   before using this JSON module
+ * ==================================================================
+ * API Reference (refer to each function implementation for detailed documentation and usage)
  *
- *   vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
- *   Also set the `scr_allowFileIo` dvar to `1` for file IO functions
- *   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- * =========================================================
- * Example of building a JSON object:
+ * Object API:
+ *   - json_object()
+ *   - object_add(obj, key, value)
+ *   - object_remove(obj, key)
+ *   - object_jsonify(obj)
+ *
+ * Array API:
+ *   - json_array()
+ *   - array_add(arr, value)
+ *   - array_remove(arr, value)
+ *   - array_jsonify(arr)
+ *
+ * Parser API:
+ *   - new_parser(s)
+ *   - stringify(parser)
+ *
+ * Parser Core:
+ *   - parse_object(p)
+ *   - parse_array(p)
+ *   - parse_string(p)
+ *   - parse_number(p)
+ *   - parse_boolean(p)
+ *
+ * Serialization (helpers):
+ *   - json_stringify_value(v)
+ *   - json_kv(key, value)
+ *
+ * Utility Functions:
+ *   - consume(p, expected)
+ *   - skip_whitespaces(p)
+ *   - get_current_char(p)
+ * ==================================================================
+ * Example Usage:
  * ```
- * #include scripts\json;
- *
  * init() {
- *   // player object
+ *   // create a player object
  *   player = json_object();
- *   player = object_add(player, "name", "Ghost");
- *   player = object_add(player, "rank", 55);
  *
- *   // weapons array
- *   weapons = json_array();
- *   weapons = array_add(weapons, "ak47");
- *   weapons = array_add(weapons, "mp7");
- *   weapons = array_jsonify(weapons);
+ *   // add properties to the player object
+ *   player = object_add(player, "name", "Alex");
+ *   player = object_add(player, "age", 22);
+ *   player = object_add(player, "admin", false);
  *
- *   // stats object (nested)
- *   stats = json_object();
- *   stats = object_add(stats, "kills", 120);
- *   stats = object_add(stats, "deaths", 30);
- *   stats = object_jsonify(stats);
+ *   // create nested array
+ *   scores = json_array();
  *
- *   // attach nested structures
- *   player = object_add(player, "weapons", weapons);
- *   player = object_add(player, "stats", stats);
+ *   // add values to the scores array
+ *   scores[scores.size] = 10;
+ *   scores[scores.size] = 25;
+ *   scores[scores.size] = 99;
  *
- *   final = object_jsonify(player);
- *   scripts\strings::printf("%j\n", final); // prints: {"name":"Ghost","rank":55,"weapons":["ak47","mp7"],"stats":{"kills":120,"deaths":30}}
+ *   // add the array to the player object
+ *   player = object_add(player, "scores", scores);
+ *
+ *   // jsonify the player object
+ *   json = object_jsonify(player);
+ *
+ *   printlnf("^2Generated JSON:^7 %s", json); // Generated JSON: {"name":"Alex","age":22,"admin":false,"scores":[10,25,99]}
+ *
+ *   // parse back to JSON
+ *   parser = new_parser(json);
+ *   parsed = stringify(parser);
+ *
+ *   printlnf("^3Parsed name:^7 %s", parsed["name"]);     // Alex
+ *   printlnf("^3Parsed age:^7 %d", parsed["age"]);       // 22
+ *   printlnf("^3Parsed admin:^7 %t", parsed["admin"]);   // 0 
+ *   printlnf("^3Parsed scores:^7 %a", parsed["scores"]); // [10,25,99]
  * }
  * ```
- * =========================================================
  */
 
 #include scripts\strings;
+#define null undefined
 
 /* 
  * json_object() Returns a new JSON object
@@ -95,22 +146,58 @@ object_add(obj, key, value) {
     return obj;
 }
 
-/* 
- * object_jsonify(obj) Finalizes a JSON object
+/*
+ * object_remove(obj, key) Removes a key-value pair from a JSON object
  *
  * Params:
- *   obj - The JSON object to finalize
+ *   obj - The JSON object to remove the key-value pair from
+ *   key - The key of the pair to remove
  *
  * Returns:
- *   The finalized JSON object
+ *   The updated JSON object
  *
  * Example Usage:
  * ```
- * obj = object_jsonify(obj);
+ * obj = object_remove(obj, "key");
+ * ```
+ */
+object_remove(obj, key) {
+    new = json_object();
+    for (i = 0; i < len(obj); i++) {
+        if (obj[i]["key"] != key) {
+            new = object_add(new, obj[i]["key"], obj[i]["value"]);
+        }
+    }
+    return new;
+}
+
+/*
+ * object_jsonify(obj) Converts a JSON object to its string representation
+ *
+ * Params:
+ *   obj - The JSON object to convert
+ *
+ * Returns:
+ *   The JSON string representation of the object
+ *
+ * Example Usage:
+ * ```
+ * json = object_jsonify(obj);
  * ```
  */
 object_jsonify(obj) {
-    return "{" + join(obj, ",") + "}";
+    json = "{";
+    for (i = 0; i < len(obj); i++) {
+        kv = obj[i];
+        json += sprintf("\"%s\":%s", kv["key"], json_stringify_value(kv["value"]));
+
+        if (i < len(obj) - 1) {
+            json += ",";
+        }
+    }
+    
+    json += "}";
+    return json;
 }
 
 /* 
@@ -144,79 +231,420 @@ json_array() {
  * ```
  */
 array_add(arr, value) {
-    arr[arr.size] = json_value(value);
+    arr[arr.size] = json_stringify_value(value);
     return arr;
 }
 
-/* 
- * array_jsonify(arr) Finalizes a JSON array
+/*
+ * array_remove(arr, value) Removes a value from a JSON array
  *
  * Params:
- *   arr - The JSON array to finalize
+ *   arr   - The JSON array to remove the value from
+ *   value - The value to remove
  *
  * Returns:
- *   The finalized JSON array
+ *   The updated JSON array
  *
  * Example Usage:
  * ```
- * arr = array_jsonify(arr);
+ * arr = array_remove(arr, "value");
+ * ```
+ */
+array_remove(arr, value) {
+    new = json_array();
+    for (i = 0; i < len(arr); i++) {
+        if (arr[i] != value) {
+            new = array_add(new, arr[i]);
+        }
+    }
+    return new;
+}
+
+/*
+ * array_jsonify(arr) Converts a JSON array to its string representation
+ *
+ * Params:
+ *   arr - The JSON array to convert
+ *
+ * Returns:
+ *   The JSON string representation of the array
+ *
+ * Example Usage:
+ * ```
+ * json = array_jsonify(arr);
  * ```
  */
 array_jsonify(arr) {
-    return "[" + join(arr, ",") + "]";
+    json = "[";
+    for (i = 0; i < arr.size; i++) {
+        json += json_stringify_value(arr[i]);
+        if (i < arr.size - 1) {
+            json += ",";
+        }
+    }
+    json += "]";
+    return json;
 }
 
-/* 
- * json_kv(key, value) Creates a key-value pair for a JSON object
+/*
+ * json_stringify_value(v) Converts a value to its JSON string representation
  *
  * Params:
- *   key   - The key for the new pair
- *   value - The value for the new pair
- *
- * Returns:
- *   The JSON key-value pair
- *
- * Example Usage:
- * ```
- * kvp = json_kv("key", "value");
- * ```
- */
-json_kv(key, value) {
-    return sprintf("\"%s\":%s", key, json_value(value));
-}
-
-/* 
- * json_value(value) Converts a value to its JSON string representation
- *
- * Params:
- *   value - The value to convert
+ *   v - The value to convert
  *
  * Returns:
  *   The JSON string representation of the value
  *
  * Example Usage:
  * ```
- * json_str = json_value("value");
+ * json = json_stringify_value("Hello, World!");
  * ```
  */
-json_value(value) {
-    if (!isdefined(value)) {
+json_stringify_value(v) {
+    if (IsString(v)) {
+        return "\"" + v + "\"";
+    }
+
+    if (IsArray(v)) {
+        isObject = false;
+
+        for (i = 0; i < v.size; i++) {
+            if (isdefined(v[i]["key"])) {
+                isObject = true;
+                break;
+            }
+        }
+
+        if (isObject) {
+            return object_jsonify(v);
+        }
+
+        json = "[";
+        for (i = 0; i < v.size; i++) {
+            json += json_stringify_value(v[i]);
+            if (i < v.size - 1) {
+                json += ",";
+            }
+        }
+
+        json += "]";
+        return json;
+    }
+
+    if (IsBoolean(v)) {
+        if (v) {
+            return "true";
+        }
+        return "false";
+    }
+
+    if (!isdefined(v)) {
         return "null";
     }
 
-    if (isString(value) && (starts_with(value, "{") || starts_with(value, "["))) {
-        return value;
+    return "" + v;
+}
+
+// json_kv(key, value) Returns a new key-value pair for a JSON object
+json_kv(key, value) {
+    kv = [];
+    kv["key"] = key;
+    kv["value"] = value;
+    return kv;
+}
+
+/*
+ * new_parser(s) Returns a new JSON parser
+ *
+ * Params:
+ *   s - The JSON string to parse
+ *
+ * Returns:
+ *   A new JSON parser instance
+ *
+ * Example Usage:
+ * ```
+ * json_string = "{\"name\":\"Alex\",\"age\":22}";
+ * parser = new_parser(json_string);
+ * ```
+ */
+new_parser(s) {
+    p = SpawnStruct();
+    p.index  = 0;
+    p.string = s;
+    return p;
+}
+
+/*
+ * stringify(parser) Returns the parsed JSON data
+ *
+ * Params:
+ *   parser - The JSON parser instance
+ *
+ * Returns:
+ *   The parsed JSON data
+ *
+ * Example Usage:
+ * ```
+ * json_string = "{\"name\":\"Alex\",\"age\":22}";
+ * parser = new_parser(json_string);
+ * data = stringify(parser);
+ * ```
+ */
+stringify(parser) {
+    skip_whitespaces(parser);
+
+    char = get_current_char(parser);
+    if (!isdefined(char)) {
+        return null;
     }
 
-    if (IsString(value)) {
-        value = replace(value, "\\", "\\\\");
-        value = replace(value, "\"", "\\\"");
-        return "\"" + value + "\"";
+    switch (char) {
+        case "{":
+            return parse_object(parser);
+
+        case "[":
+            return parse_array(parser);
+
+        case "\"":
+            return parse_string(parser);
+
+        case "-":
+        case "0":
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
+            return parse_number(parser);
+
+        default:
+            return parse_boolean(parser);
+    }
+}
+
+// parse_object(p) Parses a JSON object
+parse_object(p) {
+    obj = json_object();
+    
+    consume(p, "{");
+    skip_whitespaces(p);
+
+    if (p.index >= strlen(p.string)) {
+        return null;
     }
 
-    if (IsBoolean(value)) {
-        return sprintf("%t", value);
+    if (get_current_char(p) == "}") {
+        consume(p, "}");
+        return obj;
     }
 
-    return value + "";
+    for (;;) {
+        skip_whitespaces(p);
+        key = parse_string(p);
+        if (!isdefined(key)) {
+            return null;
+        }
+
+        skip_whitespaces(p);
+
+        result = consume(p, ":");
+        if (!isdefined(result)) {
+            return null;
+        }
+
+        skip_whitespaces(p);
+
+        value = stringify(p);
+        if (!isdefined(value) && value != false) {
+            return null;
+        }
+
+        obj[key] = value;
+
+        skip_whitespaces(p);
+
+        char = get_current_char(p);
+        if (char == ",") {
+            consume(p, ",");
+            continue;
+        }
+
+        // end object
+        if (char == "}") {
+            consume(p, "}");
+            break;
+        }
+
+        return null;
+    }
+
+    return obj;
+}
+
+// parse_string(p) Parses a JSON string
+parse_string(p) {
+    consume(p, "\"");
+    parsed = "";
+
+    while (p.index < strlen(p.string)) {
+        char = get_current_char(p);
+
+        // end string
+        if (char == "\"") {
+            consume(p, "\"");
+            return parsed;
+        }
+
+        // escaped chars
+        if (char == "\\") {
+            p.index++;
+            
+            escaped = get_current_char(p);
+            switch (escaped) {
+                case "\"":
+                    parsed += "\"";
+                    break;
+                case "\\":
+                    parsed += "\\";
+                    break;
+                case "/":
+                    parsed += "/";
+                    break;
+                case "b":
+                    parsed += "\b";
+                    break;
+                case "f":
+                    parsed += "\f";
+                    break;
+                case "n":
+                    parsed += "\n";
+                    break;
+                case "r":
+                    parsed += "\r";
+                    break;
+                case "t":
+                    parsed += "\t";
+                    break;
+                default:
+                    parsed += escaped;
+                    break;
+            }
+
+            p.index++;
+            continue;
+        }
+        parsed += char;
+        p.index++;
+    }
+
+    return null;
+}
+
+// parse_array(p) Parses a JSON array
+parse_array(p) {
+    arr = json_array();
+    consume(p, "[");
+    skip_whitespaces(p);
+
+    if (p.index >= strlen(p.string)) {
+        return null;
+    }
+
+    if (get_current_char(p) == "]") {
+        consume(p, "]");
+        return arr;
+    }
+
+    for (;;) {
+        skip_whitespaces(p);
+        value = stringify(p);
+        if (!isdefined(value) && value != false) {
+            return null;
+        }
+
+        arr[len(arr)] = value;
+
+        skip_whitespaces(p);
+
+        char = get_current_char(p);
+        if (char == ",") {
+            consume(p, ",");
+            continue;
+        }
+
+        // end array
+        if (char == "]") {
+            consume(p, "]");
+            break;
+        }
+
+        return null;
+    }
+
+    return arr;
+}
+
+// parse_number(p) Parses a JSON number
+parse_number(p) {
+    num = "";
+    while (p.index < strlen(p.string)) {
+        char = get_current_char(p);
+        if (char != "-" && char != "." && (char < "0" || char > "9")) {
+            break;
+        }
+        num += char;
+        p.index++;
+    }
+    return int(num);
+}
+
+// parse_boolean(p) Parses a JSON boolean
+parse_boolean(p) {
+    if (substr(p.string, p.index, p.index + 4) == "true") {
+        p.index += 4;
+        return true;
+    }
+
+    if (substr(p.string, p.index, p.index + 5) == "false") {
+        p.index += 5;
+        return false;
+    }
+
+    if (substr(p.string, p.index, p.index + 4) == "null") {
+        p.index += 4;
+        return null;
+    }
+
+    return null;
+}
+
+// consume(p, expected) Consumes the expected character from the parser
+consume(p, expected) {
+    char = get_current_char(p);
+    if (char != expected) {
+        return null;
+    }
+    p.index++;
+    return char;
+}
+
+// skip_whitespaces(p) Skips whitespace characters in the parser
+skip_whitespaces(p) {
+    while (p.index < strlen(p.string)) {
+        char = p.string[p.index];
+        if (char != " " && char != "\t" && char != "\n" && char != "\r") {
+            break;
+        }
+        p.index++;
+    }
+}
+
+// get_current_char(p) Returns the current character from the parser
+get_current_char(p) {
+    return p.string[p.index];
 }
