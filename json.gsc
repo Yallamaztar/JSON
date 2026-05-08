@@ -650,81 +650,6 @@ array_jsonify(arr) {
 }
 
 /*
- * json_stringify_value(v) Converts a value to its JSON string representation
- *
- * Params:
- *   v - The value to convert
- *
- * Returns:
- *   The JSON string representation of the value
- *
- * Example Usage:
- * ```
- * json = json_stringify_value("Hello, World!");
- * ```
- */
-json_stringify_value(v) {
-    if (!isdefined(v)) {
-        return "null";
-    }
-
-    if (IsString(v)) {
-        return "\"" + v + "\"";
-    }
-
-    if (IsArray(v)) {
-        isObject = false;
-
-        for (i = 0; i < v.size; i++) {
-            if (isdefined(v[i]["key"])) {
-                isObject = true;
-                break;
-            }
-        }
-
-        if (isObject) {
-            return object_jsonify(v);
-        }
-
-        json = "[";
-        for (i = 0; i < v.size; i++) {
-            json += json_stringify_value(v[i]);
-            if (i < v.size - 1) {
-                json += ",";
-            }
-        }
-
-        json += "]";
-        return json;
-    }
-
-    if (IsBoolean(v)) {
-        if (v) {
-            return "true";
-        }
-        return "false";
-    }
-
-    if (!isdefined(v)) {
-        return "null";
-    }
-
-    return "" + v;
-}
-
-// json_kv(key, value) Returns a new key-value pair for a JSON object
-json_kv(key, value) {
-    if (!isdefined(key) || !isdefined(value)) {
-        return null;
-    }
-
-    kv = [];
-    kv["key"] = key;
-    kv["value"] = value;
-    return kv;
-}
-
-/*
  * new_parser(s) Returns a new JSON parser
  *
  * Params:
@@ -1001,6 +926,81 @@ parse_boolean(p) {
     }
 
     return null;
+}
+
+/*
+ * json_stringify_value(v) Converts a value to its JSON string representation
+ *
+ * Params:
+ *   v - The value to convert
+ *
+ * Returns:
+ *   The JSON string representation of the value
+ *
+ * Example Usage:
+ * ```
+ * json = json_stringify_value("Hello, World!");
+ * ```
+ */
+json_stringify_value(v) {
+    if (!isdefined(v)) {
+        return "null";
+    }
+
+    if (IsString(v)) {
+        return "\"" + v + "\"";
+    }
+
+    if (IsArray(v)) {
+        isObject = false;
+
+        for (i = 0; i < v.size; i++) {
+            if (isdefined(v[i]["key"])) {
+                isObject = true;
+                break;
+            }
+        }
+
+        if (isObject) {
+            return object_jsonify(v);
+        }
+
+        json = "[";
+        for (i = 0; i < v.size; i++) {
+            json += json_stringify_value(v[i]);
+            if (i < v.size - 1) {
+                json += ",";
+            }
+        }
+
+        json += "]";
+        return json;
+    }
+
+    if (IsBoolean(v)) {
+        if (v) {
+            return "true";
+        }
+        return "false";
+    }
+
+    if (!isdefined(v)) {
+        return "null";
+    }
+
+    return "" + v;
+}
+
+// json_kv(key, value) Returns a new key-value pair for a JSON object
+json_kv(key, value) {
+    if (!isdefined(key) || !isdefined(value)) {
+        return null;
+    }
+
+    kv = [];
+    kv["key"] = key;
+    kv["value"] = value;
+    return kv;
 }
 
 // consume(p, expected) Consumes the expected character from the parser

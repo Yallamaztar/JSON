@@ -97,6 +97,18 @@ init() {
 
 Refer to each functions implementation in the source for detailed behavior
 
+### File I/O API
+- `allow_fileIO()`
+  - Enables file I/O operations
+
+- `write(file, obj)`
+  - Writes a JSON object to a file
+
+- `read(file)`
+  - Reads a JSON object from a file
+
+---
+
 ### Object API (key-value arrays)
 - `json_object()`
   - Creates a new empty JSON-like object (key-value array)
@@ -106,6 +118,18 @@ Refer to each functions implementation in the source for detailed behavior
 
 - `object_remove(obj, key)`
   - Removes a key-value pair by key from an object
+
+- `object_get(obj, key)`
+  - Gets the value associated with a key in a JSON object
+
+- `object_has(obj, key)` 
+  - Checks if a key exists in a JSON object
+
+- `object_clear(obj)`
+  - Clears a JSON object
+
+- `object_keys(obj)`
+  - Returns a json array of all keys
 
 - `object_jsonify(obj)`
   - Converts an object into a JSON string representation
@@ -122,6 +146,15 @@ Refer to each functions implementation in the source for detailed behavior
 
 - `array_remove(arr, value)`
   - Removes a matching value from an array
+
+- `array_has(arr, value)`
+  - Checks if a value exists in a JSON array
+
+- `array_clear(arr)`
+  - Clears a JSON array
+
+- `array_pop(arr)`
+  - Removes the last element from a JSON array
 
 - `array_jsonify(arr)`
   - Converts an array into a JSON string representation
@@ -143,8 +176,8 @@ Refer to each functions implementation in the source for detailed behavior
 Internal parsing functions used by `stringify()`:
 
 - `parse_object(p)`
-- `parse_array(p)`
 - `parse_string(p)`
+- `parse_array(p)`
 - `parse_number(p)`
 - `parse_boolean(p)`
 
