@@ -39,9 +39,9 @@
  * File I/O API:
  *   - allow_fileIO()
  *   - write(file, data)
- *   - _write(file, data)
  *   - read(file)
- *   - _read(file)
+ *   - _write(file, data) - "private" helper function
+ *   - _read(file)        - "private" helper function
  *
  * Object API:
  *   - json_object()
@@ -134,7 +134,6 @@
 #include scripts\strings;
 
 #define null undefined
-#define ALLOW_FILE_IO undefined
 
 /* Object API macros */
 #define json_obj() json_object()
