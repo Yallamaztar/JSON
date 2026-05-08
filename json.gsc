@@ -83,9 +83,9 @@
  *   scores = json_array();
  *
  *   // add values to the scores array
- *   scores[scores.size] = 10;
- *   scores[scores.size] = 25;
- *   scores[scores.size] = 99;
+ *   scores = array_add(scores, 10);
+ *   scores = array_add(scores, 25);
+ *   scores = array_add(scores, 99);
  *
  *   // add the array to the player object
  *   player = object_add(player, "scores", scores);
