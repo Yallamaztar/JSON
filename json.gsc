@@ -36,6 +36,13 @@
  * ==================================================================
  * API Reference (refer to each function implementation for detailed documentation and usage)
  *
+ * File I/O API:
+ *   - allow_fileIO()
+ *   - write(file, data)
+ *   - _write(file, data)
+ *   - read(file)
+ *   - _read(file)
+ *
  * Object API:
  *   - json_object()
  *   - object_add(obj, key, value)
@@ -100,7 +107,17 @@
  *   // jsonify the player object
  *   json = object_jsonify(player);
  *
- *   printlnf("^2Generated JSON:^7 %s", json); // Generated JSON: {"name":"Alex","age":22,"admin":false,"scores":[10,25,99]}
+ *   printlnf("^2Generated JSON:^7 %s", json); 
+ *   // Generated JSON: {"name":"Alex","age":22,"admin":false,"scores":[10,25,99]}
+ *  
+ *   // file I/O example (write and reading)
+ *   write("player.json", player);
+ *   loaded = read("player.json");
+ *  
+ *   printlnf("^3Loaded name:^7 %s", loaded["name"]);
+ *   printlnf("^3Loaded age:^7 %d", loaded["age"]);
+ *   printlnf("^3Loaded admin:^7 %t", loaded["admin"]);
+ *   printlnf("^3Loaded scores:^7 %a", loaded["scores"]);
  *
  *   // parse back to JSON
  *   parser = new_parser(json);
@@ -117,6 +134,7 @@
 #include scripts\strings;
 
 #define null undefined
+#define ALLOW_FILE_IO undefined
 
 /* Object API macros */
 #define json_obj() json_object()
@@ -137,6 +155,126 @@
 #define arr_clear(arr) array_clear(arr)
 #define arr_pop(arr) array_pop(arr)
 #define arr_jsonify(arr) array_jsonify(arr)
+
+/*
+ * allow_fileIO() Enables file I/O operations
+ *
+ * Example Usage:
+ * ```
+ * init() {
+ *   allow_fileIO();
+ * }
+ * ```
+ */
+allow_fileIO() {
+    SetDvar("scr_allowFileIo", "1");
+}
+
+/*
+ * write(file, obj) Writes a JSON object to a file
+ *
+ * Params:
+ *   file - The file to write to
+ *   obj  - The JSON object to write
+ *
+ * Returns:
+ *   true if the write was successful, false otherwise
+ *
+ * Example Usage:
+ * ```
+ * player = json_object();
+ * write("player.json", player);
+ * ```
+ */
+write(file, obj) {
+    json = object_jsonify(obj);
+
+    if (!isdefined(json)) {
+        return false;
+    }
+
+    return _write(file, json);
+}
+
+// _write(file, data) Writes a JSON string to a file
+_write(file, data) {
+    if (!isdefined(file) || !isdefined(data)) {
+        return false;
+    }
+    
+    fs = fs_fopen(file, "write");
+    if (!isdefined(fs)) {
+        return false;
+    }
+
+    // ensure string conversion
+    fs_writeline(fs, "" + data);
+
+    fs_fclose(fs);
+    return true;
+}
+
+/*
+ * read(file) Reads a JSON object from a file
+ *
+ * Params:
+ *   file - The file to read from
+ *
+ * Returns:
+ *   The JSON object read from the file, or null if the read was unsuccessful
+ *
+ * Example Usage:
+ * ```
+ * player = read("player.json");
+ * ```
+ */
+read(file) {
+    data = _read(file);
+    if (!isdefined(data)) {
+        return null;
+    }
+
+    p = new_parser(data);
+    return stringify(p);
+}
+
+// _read(file) Read a JSON string from a file
+_read(file) {
+    if (!isdefined(file) || !fs_testfile(file)) {
+        return null;
+    }
+
+    fs = fs_fopen(file, "read");
+    if (!isdefined(fs)) {
+        return null;
+    }
+
+    data = "";
+    first = true;
+
+    while (true) {
+        line = fs_readline(fs);
+
+        if (!isdefined(line)) {
+            break;
+        }
+
+        if (!first) {
+            data += "\n";
+        }
+
+        data += line;
+        first = false;
+    }
+
+    fs_fclose(fs);
+
+    if (data == "") {
+        return null;
+    }
+
+    return data;
+}
 
 /* 
  * json_object() Returns a new JSON object
