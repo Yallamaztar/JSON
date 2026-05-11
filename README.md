@@ -12,8 +12,7 @@ A Lightweight JSON Library for [**Plutonium T6 (Black Ops II)**](https://plutoni
 - Optional file I/O support for persistent data storage
 - Serialize GSC data structures into valid JSON strings
 - Parse JSON strings back into usable GSC arrays and objects
-- Object utilities: ``add, get, remove, check existence, clear, and key enumeration``
-- Array utilities: ``push, pop, remove, search, clear, and stringify``
+
 ---
 
 ## Dependencies
