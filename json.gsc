@@ -5,21 +5,6 @@
  * A lightweight JSON library for Plutonium T6 (BO2) GSC, enabling 
  * easy creation, parsing, and serialization of JSON objects and arrays
  * ==================================================================
- * Copyright (c) 2026 Budiworld 🍌
- * This script is part of a custom JSON library.
- *
- * Permission is granted to use, modify, and include this
- * code in both personal and public projects, provided that
- * the original copyright notice and this permission notice
- * remain intact in all copies or substantial portions of the
- * software.
- *
- * You are NOT required to open-source your entire project,
- * but you MUST retain this notice if this script is used.
- *
- * This software is provided "as is", without warranty of any
- * kind, express or implied.
- * ==================================================================
  * Dependencies:
  *   Requires the strings utility library:
  *   https://github.com/Yallamaztar/strings
@@ -128,6 +113,20 @@
  *   printlnf("^3Parsed admin:^7 %t", parsed["admin"]);   // 0 
  *   printlnf("^3Parsed scores:^7 %a", parsed["scores"]); // [10,25,99]
  * }
+ *
+ * // required for using file I/O functions
+ * allow_fileIO(); 
+ *
+ * // write JSON object to file
+ * write("players.json", player);
+ *
+ * // read JSON object back from file (auto parsed)
+ * data = read("players.json");
+ *
+ * printlnf("[players.json] name: %s", data["name"]);      // Alex
+ * printlnf("[players.json] age: %d", data["age"]);        // 22
+ * printlnf("[players.json] is admin: %t", data["admin"]); // 0 -> booleans are represented by: 0 (false) | 1 (true)
+ * printlnf("[players.json] scores: %a", data["scores"]);  // [10,25,99]
  * ```
  */
  
@@ -600,7 +599,7 @@ array_clear(arr) {
  *   arr - The JSON array to pop from
  *
  * Returns:
- *   The popped value or null if the array is empty
+ *   The JSON array with the last element removed
  *
  * Example Usage:
  * ```
@@ -614,7 +613,7 @@ array_pop(arr) {
 
     new = json_array();
     for (i = 0; i < len(arr) - 1; i++) {
-        new[i] = arr[i];
+        new = array_add(new, arr[i]);
     }
     return new;
 }
