@@ -951,36 +951,50 @@ json_stringify_value(v) {
     }
 
     if (IsArray(v)) {
+        keys = getArrayKeys(v);
         isObject = false;
-
-        for (i = 0; i < v.size; i++) {
-            if (isdefined(v[i]["key"])) {
+        for (i = 0; i < keys.size; i++) {
+            if (IsString(keys[i])) {
                 isObject = true;
                 break;
             }
         }
-
         if (isObject) {
             return object_jsonify(v);
         }
-
+        
         json = "[";
-        for (i = 0; i < v.size; i++) {
-            json += json_stringify_value(v[i]);
-            if (i < v.size - 1) {
-                json += ",";
+        for (i = 0; i < keys.size; i++) {
+            json += json_stringify_value(v[keys[i]]);
+            if (i < keys.size - 1) json += ",";
+        }
+        json += "]";
+        return json;
+    }  
+
+    if (IsBoolean(v) && !IsInt(v) && !IsFloat(v)) {
+        if (v) return "true";
+        return "false";
+    }
+
+
+    if (IsVec(v)) {
+        json = "[";
+        first = true;
+
+        for (i = 0; i < 3; i++) {
+            if (isdefined(v[i])) {
+                if (!first) { 
+                    json += ",";
+                }
+
+                json += json_stringify_value(v[i]);
+                first = false;
             }
         }
 
         json += "]";
         return json;
-    }
-
-    if (IsBoolean(v)) {
-        if (v) {
-            return "true";
-        }
-        return "false";
     }
 
     if (!isdefined(v)) {
@@ -989,6 +1003,7 @@ json_stringify_value(v) {
 
     return "" + v;
 }
+
 
 // json_kv(key, value) Returns a new key-value pair for a JSON object
 json_kv(key, value) {
