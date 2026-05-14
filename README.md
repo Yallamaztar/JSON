@@ -69,10 +69,10 @@ init() {
     parsed = stringify(parser);
 
     // Access parsed values
-    printlnf("^3Parsed name:^7 %s", parsed["name"]);     // Alex
-    printlnf("^3Parsed age:^7 %d", parsed["age"]);       // 22
-    printlnf("^3Parsed admin:^7 %t", parsed["admin"]);   // 0 -> booleans are represented by: 0 (false) | 1 (true)
-    printlnf("^3Parsed scores:^7 %a", parsed["scores"]); // [10,25,99]
+    printlnf("^3Parsed name:^7 %s", object_get(parsed, "name"));     // Alex
+    printlnf("^3Parsed age:^7 %d", object_get(parsed, "age"));       // 22
+    printlnf("^3Parsed admin:^7 %t", object_get(parsed, "admin"));   // 0 -> booleans are represented by: 0 (false) | 1 (true)
+    printlnf("^3Parsed scores:^7 %a", object_get(parsed, "scores")); // [10,25,99]
 
     /* NEW file I/O functions */
     // required for using file I/O functions
@@ -84,10 +84,10 @@ init() {
     // read JSON object back from file (auto parsed)
     data = read("players.json");
 
-    printlnf("[players.json] name: %s", data["name"]);      // Alex
-    printlnf("[players.json] age: %d", data["age"]);        // 22
-    printlnf("[players.json] is admin: %t", data["admin"]); // 0 -> booleans are represented by: 0 (false) | 1 (true)
-    printlnf("[players.json] scores: %a", data[scores]);    // [10,25,99]
+    printlnf("[players.json] name: %s", object_get(data, "name"));      // Alex
+    printlnf("[players.json] age: %d", object_get(data, "age"));        // 22
+    printlnf("[players.json] is admin: %t", object_get(data, "admin")); // 0 -> booleans are represented by: 0 (false) | 1 (true)
+    printlnf("[players.json] scores: %a", object_get(data, "scores"));  // [10,25,99]
 }
 ```
 
